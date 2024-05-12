@@ -5,7 +5,6 @@ import com.example.pathfinder.model.view.RouteViewModel;
 import com.example.pathfinder.model.binding.AddRouteBindingModel;
 import com.example.pathfinder.model.binding.RoutesModel;
 import com.example.pathfinder.model.entity.Route;
-import com.example.pathfinder.model.entity.User;
 import com.example.pathfinder.model.enums.CategoryNames;
 import com.example.pathfinder.model.view.RouteCategoryViewModel;
 import com.example.pathfinder.repository.CategoryRepository;
@@ -13,8 +12,8 @@ import com.example.pathfinder.repository.RouteRepository;
 import com.example.pathfinder.repository.UserRepository;
 import com.example.pathfinder.service.CategoryService;
 import com.example.pathfinder.service.RouteService;
-import com.example.pathfinder.util.UserCurrent;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,8 +25,7 @@ public class RouteServiceImpl implements RouteService {
     private RouteRepository routeRepository;
 
     private final UserRepository userRepository;
-    
-    private final UserCurrent userCurrent;
+
 
     private ModelMapper modelMapper;
 
@@ -35,42 +33,29 @@ public class RouteServiceImpl implements RouteService {
 
     private CategoryRepository categoryRepository;
 
-    public RouteServiceImpl(RouteRepository routeRepository, UserRepository userRepository, UserCurrent userCurrent, ModelMapper modelMapper, CategoryService categoryService, CategoryRepository categoryRepository) {
+    public RouteServiceImpl(RouteRepository routeRepository, UserRepository userRepository, ModelMapper modelMapper, CategoryService categoryService, CategoryRepository categoryRepository) {
         this.routeRepository = routeRepository;
         this.userRepository = userRepository;
-        this.userCurrent = userCurrent;
         this.modelMapper = modelMapper;
         this.categoryService = categoryService;
         this.categoryRepository = categoryRepository;
     }
 
-
     @Override
-    public void addRoute(AddRouteBindingModel addRouteBindingModel) {
+    public void addRoute(AddRouteBindingModel addRouteBindingModel, User user) {
         Route route = modelMapper.map(addRouteBindingModel,Route.class);
 
-        User user = userRepository.findByUsername(userCurrent.getUsername());
+        com.example.pathfinder.model.entity.User user1 = userRepository.findByUsername(user.getUsername()).orElseThrow();
 
+        route.setCategories(addRouteBindingModel
+                .getCategories()
+                .stream()
+                .map(c->categoryService.findByName(c))
+                .collect(Collectors.toSet()));
 
-//        route.getCategories().clear();
-
-//        Set<Category> categories = categoryRepository.findByName(addRouteBindingModel.getCategories());
-//
-//                route.addCategories(categories);
-
-                route.setCategories(addRouteBindingModel
-                        .getCategories()
-                        .stream()
-                        .map(c->categoryService.findByName(c))
-                        .collect(Collectors.toSet()));
-
-                route.setAuthor(user);
-
-
-
+        route.setAuthor(user1);
 
         routeRepository.save(route);
-
     }
 
     @Override

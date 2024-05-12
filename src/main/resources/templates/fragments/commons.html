@@ -20,34 +20,34 @@
 <header th:fragment="navigation">
     <nav class="main-nav">
         <ul>
-            <th:block th:if="${@userCurrent.username == null}">
             <li>
                 <a href="/">Home</a>
             </li>
             <li>
-                <a href="/users/login">Login</a>
+                <a sec:authorize=="isAnonymous()" href="/users/login">Login</a>
             </li>
             <li>
-                <a href="/users/register">Register</a>
+                <a sec:authorize=="isAnonymous()" href="/users/register">Register</a>
             </li>
             <li>
                 <a href="/about">About</a>
             </li>
-            </th:block>
-            <th:block th:unless="${@userCurrent.username == null}" th:object="${@userCurrent}">
             <li>
-                <a href="/routes/add">Add new route</a>
+                <a sec:authorize="isAuthenticated()" th:href="@{/routes/add}">Add new route</a>
             </li>
             <li>
-                <a th:href="@{/users/profile/{id}(id=${@userCurrent.id})}">Profile</a>
+                <a sec:authorize="isAuthenticated()" th:href="@{/users/profile}">Profile</a>
             </li>
             <li>
-                <a href="/">Admin</a>
+                <a sec:authorize="isAuthenticated()" href="/admin">Admin</a>
             </li>
-            <li>
-                <a th:href="@{/users/logout}">Logout</a>
+            <li >
+                <form th:action="@{/users/logout}"
+                      th:method="post">
+                    <input type="hidden">
+                    <button id="logButton"   type="submit"   sec:authorize="isAuthenticated()" >Logout</button>
+                </form>
             </li>
-            </th:block>
         </ul>
     </nav>
 </header>

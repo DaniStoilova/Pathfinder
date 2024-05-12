@@ -357,3 +357,21 @@ body {
     height: 40px;
     background-color: #0833e3
 }
+#logButton {
+    background: var(--primary);
+    display: block;
+    text-decoration: none;
+    padding: 0.8rem;
+    text-align: center;
+    color: var(--dark);
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    box-shadow: var(--shadow);
+}
+
+#logButton {
+    background: var(--dark);
+    color: var(--light);
+}
+
+

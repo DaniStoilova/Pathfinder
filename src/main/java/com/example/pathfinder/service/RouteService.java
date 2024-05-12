@@ -6,13 +6,15 @@ import com.example.pathfinder.model.binding.AddRouteBindingModel;
 import com.example.pathfinder.model.binding.RoutesModel;
 import com.example.pathfinder.model.enums.CategoryNames;
 import com.example.pathfinder.model.view.RouteCategoryViewModel;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 
 
 public interface RouteService {
 
-    void addRoute(AddRouteBindingModel addRouteBindingModel);
+    void addRoute(AddRouteBindingModel addRouteBindingModel, User user);
 
     List<RouteViewModel> getAll();
 

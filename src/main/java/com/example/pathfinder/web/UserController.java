@@ -1,10 +1,11 @@
 package com.example.pathfinder.web;
 
-import com.example.pathfinder.model.binding.LoginBindingModel;
 import com.example.pathfinder.model.binding.RegisterBindingModel;
 import com.example.pathfinder.model.view.UserViewModel;
 import com.example.pathfinder.service.UserService;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -53,50 +54,36 @@ public class UserController {
 
 
     @GetMapping("/login")
-    public String login(Model model){
-        if (!model.containsAttribute("loginBindingModel")){
-            model.addAttribute("loginBindingModel",new LoginBindingModel());
-        }
+    public String login(){
 
         return "login";
 
     }
 
-    @PostMapping("/login")
-    public String confirmLogin(LoginBindingModel loginBindingModel){
+    @PostMapping("/login-error")
+    public String confirmLogin(@ModelAttribute("username") String username,Model model){
+
+        model.addAttribute("username",username);
+        model.addAttribute("bad_credentials",true);
 
 
-        boolean isLogin = userService.login(loginBindingModel);
-
-        if (isLogin){
-           return  "redirect:/";
-       }
 
         return  "login";
 
-//       return isLogin ? "redirect:/" : "login";
     }
 
-    @GetMapping("/logout")
-    public String logout(){
-        userService.logout();
-        return "redirect:/";
-    }
+    @GetMapping("/profile")
+    public String profile(Model model,@AuthenticationPrincipal User user){
 
-    @GetMapping("/profile/{id}")
-    public String profile(@PathVariable Long id,Model model){
+//        model.addAttribute("user",
+//                modelMapper.map(userService.findById(id),UserViewModel.class));
 
+        UserViewModel userViewModel = this.userService.getLoggedUser(user.getUsername());
 
-
-        model.addAttribute("user",
-                modelMapper.map(userService.findById(id),UserViewModel.class));
+        model.addAttribute("user",userViewModel);
 
         return "profile";
+
     }
-
-
-
-
-
 
 }
